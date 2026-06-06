@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Knowledge Clicker Deluxe v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1209;
+  --parchment: #f5edd8;
+  --parchment2: #ede0c4;
+  --parchment3: #e0ceaa;
+  --gold: #c8952a;
+  --gold2: #f0c050;
+  --gold3: #7a5510;
+  --red: #8b1a1a;
+  --teal: #1a5c5c;
+  --teal2: #2a8a8a;
+  --shadow: rgba(26,18,9,0.3);
+  --glow: rgba(200,149,42,0.4);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--ink);
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 32px, rgba(200,149,42,0.04) 32px, rgba(200,149,42,0.04) 33px),
+    repeating-linear-gradient(90deg, transparent, transparent 32px, rgba(200,149,42,0.04) 32px, rgba(200,149,42,0.04) 33px);
+  color: var(--ink);
+  font-family: 'Crimson Text', Georgia, serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── LAYOUT ── */
+#root { display: flex; flex-direction: column; min-height: 100vh; max-width: 1200px; margin: 0 auto; padding: 12px; gap: 10px; }
+
+header {
+  text-align: center;
+  padding: 18px 12px 10px;
+  border-bottom: 2px solid var(--gold3);
+  position: relative;
+}
+header::after {
+  content: '✦ ─────────────── ✦ ─────────────── ✦';
+  display: block;
+  color: var(--gold3);
+  font-size: 11px;
+  margin-top: 6px;
+  letter-spacing: 2px;
+}
+
+h1 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(22px, 4vw, 38px);
+  font-weight: 900;
+  color: var(--gold2);
+  text-shadow: 0 0 30px var(--glow), 2px 2px 0 var(--gold3);
+  letter-spacing: 4px;
+  line-height: 1.1;
+}
+h1 small {
+  display: block;
+  font-size: 0.38em;
+  letter-spacing: 8px;
+  color: var(--parchment3);
+  font-weight: 400;
+  margin-top: 4px;
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr 220px;
+  gap: 10px;
+  flex: 1;
+}
+@media(max-width: 860px) {
+  .main-grid { grid-template-columns: 1fr; }
+}
+
+/* ── PANELS ── */
+.panel {
+  background: var(--parchment);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  border: 2px solid var(--gold3);
+  border-radius: 4px;
+  padding: 12px;
+  position: relative;
+  box-shadow: inset 0 0 20px rgba(200,149,42,0.06), 3px 3px 8px var(--shadow);
+}
+.panel-title {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--gold3);
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--parchment3);
+}
+
+/* ── STATS ── */
+#stats-panel { grid-column: 1; }
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px dotted var(--parchment3);
+  font-size: 14px;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-label { color: var(--gold3); font-style: italic; }
+.stat-val { font-family: 'Cinzel', serif; font-size: 13px; color: var(--ink); font-weight: 700; }
+.stat-val.big { font-size: 18px; color: var(--red); }
+
+.offline-notice {
+  background: var(--gold3);
+  color: var(--parchment);
+  font-size: 11px;
+  padding: 5px 8px;
+  border-radius: 2px;
+  margin-top: 8px;
+  text-align: center;
+  display: none;
+}
+
+/* ── CENTER ── */
+#center-panel { display: flex; flex-direction: column; gap: 10px; }
+
+/* ── STUDY BUTTON ── */
+.study-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+}
+#study-btn {
+  width: 120px; height: 120px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--gold2), var(--gold), var(--gold3));
+  border: 4px solid var(--gold3);
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--ink);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+  box-shadow: 0 4px 16px var(--shadow), 0 0 24px var(--glow), inset 0 2px 4px rgba(255,255,255,0.3);
+  transition: transform 0.08s, box-shadow 0.08s;
+  touch-action: manipulation;
+  position: relative;
+  overflow: hidden;
+}
+#study-btn:active { transform: scale(0.93); box-shadow: 0 2px 8px var(--shadow), 0 0 12px var(--glow); }
+#study-btn::after {
+  content: '';
+  position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 60% 65%, transparent 40%, rgba(0,0,0,0.15));
+}
+.click-gain {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: var(--gold3);
+  letter-spacing: 1px;
+}
+
+/* floating +N */
+.floatie {
+  position: fixed;
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold2);
+  text-shadow: 0 0 8px var(--glow), 1px 1px 0 var(--gold3);
+  pointer-events: none;
+  animation: floatUp 1s ease-out forwards;
+  z-index: 999;
+}
+@keyframes floatUp {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-60px) scale(1.4); }
+}
+
+/* ── TABS ── */
+.tabs { display: flex; border-bottom: 2px solid var(--gold3); margin-bottom: 10px; }
+.tab {
+  flex: 1; padding: 7px 4px; background: none; border: none;
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 2px;
+  color: var(--gold3); cursor: pointer; text-transform: uppercase;
+  transition: background 0.2s, color 0.2s;
+}
+.tab.active {
+  background: var(--gold3); color: var(--parchment);
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── BUILDINGS ── */
+.building-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 8px; margin-bottom: 5px;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+.building-row:hover:not(.locked) { border-color: var(--gold); background: var(--parchment3); }
+.building-row.locked { opacity: 0.45; cursor: not-allowed; }
+.building-row.affordable { border-color: var(--gold); }
+.building-icon { font-size: 22px; flex-shrink: 0; }
+.building-info { flex: 1; min-width: 0; }
+.building-name { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: var(--ink); }
+.building-desc { font-size: 11px; color: var(--gold3); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.building-right { text-align: right; flex-shrink: 0; }
+.building-cost { font-family: 'Cinzel', serif; font-size: 11px; color: var(--red); font-weight: 700; }
+.building-owned { font-family: 'Cinzel', serif; font-size: 18px; font-weight: 900; color: var(--gold3); }
+.building-ps { font-size: 10px; color: var(--teal2); font-style: italic; }
+
+/* ── UPGRADES ── */
+.upgrade-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 6px; }
+.upgrade-btn {
+  aspect-ratio: 1;
+  background: var(--parchment2);
+  border: 2px solid var(--parchment3);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 24px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px;
+  position: relative;
+  transition: border-color 0.15s, transform 0.1s;
+  padding: 4px;
+}
+.upgrade-btn span { font-size: 9px; font-family: 'Cinzel', serif; color: var(--gold3); text-align: center; line-height: 1.1; }
+.upgrade-btn:hover:not(.locked):not(.bought) { border-color: var(--gold); transform: scale(1.05); }
+.upgrade-btn.affordable { border-color: var(--gold); box-shadow: 0 0 8px var(--glow); }
+.upgrade-btn.bought { background: var(--ink); opacity: 0.5; cursor: default; }
+.upgrade-btn.locked { opacity: 0.2; cursor: not-allowed; }
+.upgrade-tooltip {
+  display: none; position: absolute; z-index: 50;
+  bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: var(--parchment);
+  font-size: 11px; padding: 6px 10px; border-radius: 3px;
+  white-space: nowrap; border: 1px solid var(--gold3);
+  pointer-events: none;
+  font-family: 'Crimson Text', serif;
+}
+.upgrade-btn:hover .upgrade-tooltip { display: block; }
+
+/* ── PRESTIGE ── */
+.prestige-section { text-align: center; padding: 10px; }
+.prestige-info { font-size: 13px; color: var(--gold3); margin-bottom: 10px; line-height: 1.6; }
+.prestige-gain { font-family: 'Cinzel', serif; font-size: 22px; color: var(--gold2); font-weight: 900; }
+
+/* ── RESEARCH ── */
+.research-item {
+  padding: 8px 10px; margin-bottom: 6px;
+  border: 1px solid var(--parchment3);
+  background: var(--parchment2);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.research-item:hover:not(.locked):not(.done) { border-color: var(--gold); }
+.research-item.done { border-color: var(--teal); opacity: 0.6; cursor: default; }
+.research-item.locked { opacity: 0.3; cursor: not-allowed; }
+.research-name { font-family: 'Cinzel', serif; font-size: 12px; color: var(--ink); margin-bottom: 2px; }
+.research-desc { font-size: 12px; color: var(--gold3); font-style: italic; }
+.research-cost { font-size: 11px; color: var(--red); margin-top: 2px; font-family: 'Cinzel', serif; }
+
+/* ── ACHIEVEMENTS ── */
+.ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 6px; }
+.ach-badge {
+  aspect-ratio: 1;
+  background: var(--parchment2);
+  border: 2px solid var(--parchment3);
+  border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 22px;
+  position: relative;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ach-badge.earned { border-color: var(--gold); box-shadow: 0 0 10px var(--glow); }
+.ach-badge.locked { filter: grayscale(1); opacity: 0.3; }
+.ach-badge .ach-tip {
+  display: none; position: absolute; z-index: 50;
+  bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: var(--parchment);
+  font-size: 11px; padding: 6px 10px; border-radius: 3px;
+  white-space: nowrap; border: 1px solid var(--gold3);
+  font-family: 'Crimson Text', serif; min-width: 120px; text-align: center;
+}
+.ach-badge:hover .ach-tip { display: block; }
+
+/* ── RIGHT PANEL ── */
+#right-panel { display: flex; flex-direction: column; gap: 10px; }
+
+/* ── MILESTONES ── */
+.milestone {
+  padding: 5px 8px; border-left: 3px solid var(--parchment3);
+  font-size: 12px; margin-bottom: 4px;
+  transition: border-color 0.3s;
+}
+.milestone.done { border-left-color: var(--gold); }
+.milestone-name { font-family: 'Cinzel', serif; font-size: 11px; color: var(--ink); }
+.milestone-desc { color: var(--gold3); font-style: italic; font-size: 11px; }
+
+/* ── CHALLENGE ── */
+.challenge-panel { background: linear-gradient(135deg, #2a1008, #1a1209); color: var(--parchment); border-color: var(--red); }
+.challenge-panel .panel-title { color: #e08060; }
+.challenge-name { font-family: 'Cinzel', serif; font-size: 13px; color: var(--gold2); margin-bottom: 4px; }
+.challenge-desc { font-size: 12px; color: #c0a080; font-style: italic; }
+.challenge-prog { height: 6px; background: #3a2010; border-radius: 3px; margin: 8px 0; overflow: hidden; }
+.challenge-bar { height: 100%; background: linear-gradient(90deg, var(--red), var(--gold)); border-radius: 3px; transition: width 0.5s; }
+
+/* ── BUTTONS ── */
+.btn {
+  font-family: 'Cinzel', serif;
+  font-size: 11px; letter-spacing: 2px;
+  padding: 8px 14px;
+  background: linear-gradient(180deg, var(--parchment2), var(--parchment3));
+  border: 2px solid var(--gold3);
+  border-radius: 2px; cursor: pointer;
+  color: var(--ink); text-transform: uppercase;
+  transition: background 0.15s, transform 0.1s;
+  display: inline-block;
+}
+.btn:hover { background: var(--parchment3); }
+.btn:active { transform: scale(0.97); }
+.btn.danger { border-color: var(--red); color: var(--red); }
+.btn.primary { background: linear-gradient(180deg, var(--gold), var(--gold3)); color: var(--parchment); border-color: var(--gold3); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── NOTIF TOAST ── */
+#toast {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--ink); color: var(--gold2);
+  border: 1px solid var(--gold3);
+  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 1px;
+  padding: 10px 18px; border-radius: 3px;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 100; max-width: 300px; pointer-events: none;
+}
+#toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--parchment2); }
+::-webkit-scrollbar-thumb { background: var(--gold3); border-radius: 3px; }
+
+/* ── MISC ── */
+.section-header { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px; color: var(--gold3); text-transform: uppercase; margin: 10px 0 6px; border-bottom: 1px dotted var(--parchment3); padding-bottom: 3px; }
+.num { font-family: 'Cinzel', serif; }
+.fps-badge { position: fixed; bottom: 10px; left: 10px; font-size: 10px; color: var(--gold3); opacity: 0.4; font-family: monospace; }
+</style>
+</head>
+<body>
+
+<div id="root">
+  <header>
+    <h1>Knowledge Clicker Deluxe<small>The Scholar's Ascent · v2.0</small></h1>
+  </header>
+
+  <div class="main-grid">
+    <!-- LEFT: Stats -->
+    <div id="stats-panel" class="panel">
+      <div class="panel-title">Ledger of Progress</div>
+      <div class="stat-row"><span class="stat-label">Knowledge</span><span class="stat-val big" id="k-stat">0</span></div>
+      <div class="stat-row"><span class="stat-label">Total Earned</span><span class="stat-val" id="total-stat">0</span></div>
+      <div class="stat-row"><span class="stat-label">Per Second</span><span class="stat-val" id="ps-stat">0</span></div>
+      <div class="stat-row"><span class="stat-label">Per Click</span><span class="stat-val" id="pc-stat">1</span></div>
+      <div class="stat-row"><span class="stat-label">Prestige</span><span class="stat-val" id="p-stat">0</span></div>
+      <div class="stat-row"><span class="stat-label">Ascensions</span><span class="stat-val" id="asc-stat">0</span></div>
+      <div class="stat-row"><span class="stat-label">Multiplier</span><span class="stat-val" id="mult-stat">×1.00</span></div>
+      <div id="offline-notice" class="offline-notice"></div>
+
+      <div class="section-header" style="margin-top:14px">Active Buffs</div>
+      <div id="buff-list" style="min-height:30px;font-size:11px;color:var(--gold3);font-style:italic;">None</div>
+    </div>
+
+    <!-- CENTER -->
+    <div id="center-panel">
+      <div class="panel">
+        <div class="study-area">
+          <button id="study-btn" onclick="doStudy(event)">STUDY</button>
+          <div class="click-gain" id="click-hint">+<span id="click-gain-txt">1</span> knowledge per click</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px">
+            <button class="btn" onclick="buyMax('book')">📚 Max Books</button>
+            <button class="btn" onclick="buyMax('library')">🏛️ Max Libraries</button>
+            <button class="btn" id="frenzy-btn" onclick="activateFrenzy()" title="10× clicks for 30s">⚡ Frenzy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="flex:1">
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('buildings',this)">Buildings</button>
+          <button class="tab" onclick="switchTab('upgrades',this)">Upgrades</button>
+          <button class="tab" onclick="switchTab('research',this)">Research</button>
+          <button class="tab" onclick="switchTab('achievements',this)">Feats</button>
+          <button class="tab" onclick="switchTab('prestige',this)">Prestige</button>
+        </div>
+
+        <!-- Buildings -->
+        <div id="tab-buildings" class="tab-content active" style="max-height:320px;overflow-y:auto;padding-right:2px">
+          <div id="buildings-list"></div>
+        </div>
+
+        <!-- Upgrades -->
+        <div id="tab-upgrades" class="tab-content" style="max-height:320px;overflow-y:auto;">
+          <div id="upgrades-list" class="upgrade-grid"></div>
+        </div>
+
+        <!-- Research -->
+        <div id="tab-research" class="tab-content" style="max-height:320px;overflow-y:auto;">
+          <div id="research-list"></div>
+        </div>
+
+        <!-- Achievements -->
+        <div id="tab-achievements" class="tab-content" style="max-height:320px;overflow-y:auto;">
+          <div id="ach-grid" class="ach-grid"></div>
+        </div>
+
+        <!-- Prestige -->
+        <div id="tab-prestige" class="tab-content">
+          <div class="prestige-section">
+            <p class="prestige-info">
+              Transcend your current form. Sacrifice all knowledge and buildings to gain<br>
+              <span class="prestige-gain" id="prestige-preview">0</span> Prestige Points<br>
+              <span style="font-size:12px;color:var(--gold3)">Each point grants a permanent +5% global multiplier</span>
+            </p>
+            <p class="prestige-info" style="font-size:12px" id="prestige-req-txt">Requires 10,000 knowledge to prestige</p>
+            <button class="btn danger" id="prestige-btn" onclick="doPrestige()">✦ Ascend ✦</button>
+            <div style="margin-top:16px;font-size:12px;color:var(--gold3)">
+              <strong>Prestige Upgrades</strong>
+            </div>
+            <div id="prestige-upgrades" style="margin-top:8px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Milestones + Challenge -->
+    <div id="right-panel">
+      <div class="panel">
+        <div class="panel-title">Milestones</div>
+        <div id="milestones-list"></div>
+      </div>
+      <div class="panel challenge-panel" id="challenge-panel">
+        <div class="panel-title">Daily Challenge</div>
+        <div class="challenge-name" id="ch-name">Loading…</div>
+        <div class="challenge-desc" id="ch-desc"></div>
+        <div class="challenge-prog"><div class="challenge-bar" id="ch-bar" style="width:0%"></div></div>
+        <div style="font-size:11px;color:#c0a080;text-align:right" id="ch-prog-txt">0 / 0</div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Actions</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="btn" onclick="exportSave()">📤 Export Save</button>
+          <button class="btn" onclick="importSave()">📥 Import Save</button>
+          <button class="btn danger" onclick="hardReset()">🗑️ Hard Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+//  DATA DEFINITIONS
+// ═══════════════════════════════════════════
+
+const BUILDINGS = [
+  { id:'candle',   name:'Candle',      icon:'🕯️', base:10,    kps:0.2,  desc:'Dim but dedicated reading light' },
+  { id:'scroll',   name:'Scroll',      icon:'📜', base:80,    kps:1,    desc:'Ancient wisdom, coiled tight' },
+  { id:'book',     name:'Tome',        icon:'📚', base:500,   kps:5,    desc:'Dense volumes of lore' },
+  { id:'library',  name:'Library',     icon:'🏛️', base:3000,  kps:20,   desc:'Halls echoing with whispers' },
+  { id:'school',   name:'School',      icon:'🏫', base:15000, kps:80,   desc:'Structured education for the masses' },
+  { id:'college',  name:'College',     icon:'🎓', base:80000, kps:300,  desc:'Higher learning, higher cost' },
+  { id:'oracle',   name:'Oracle',      icon:'🔮', base:400000,kps:1200, desc:'Mystical fount of knowing' },
+  { id:'archive',  name:'Archive',     icon:'🗄️', base:2e6,   kps:4500, desc:'Repository of all recorded history' },
+  { id:'academy',  name:'Arcane Academy',icon:'⚗️',base:1e7, kps:18000,desc:'Where spells are equations' },
+  { id:'nexus',    name:'Knowledge Nexus',icon:'🌐',base:5e7,kps:80000,desc:'Collective mind of the realm' },
+];
+
+const UPGRADES = [
+  // Click upgrades
+  { id:'better_quill',  name:'Better Quill',   icon:'🖊️', cost:100,    req:null,        effect:'clickMult',  val:2,   desc:'Double your click power' },
+  { id:'focus',         name:'Deep Focus',      icon:'🧘', cost:500,    req:null,        effect:'clickMult',  val:2,   desc:'×2 click power' },
+  { id:'inspiration',   name:'Inspiration',     icon:'💡', cost:2500,   req:null,        effect:'clickMult',  val:2,   desc:'×2 click power' },
+  { id:'eureka',        name:'Eureka!',          icon:'✨', cost:20000,  req:null,        effect:'clickMult',  val:3,   desc:'×3 click power' },
+  { id:'genius',        name:'Genius',           icon:'🧠', cost:200000, req:null,        effect:'clickMult',  val:5,   desc:'×5 click power' },
+  // Candle
+  { id:'beeswax',       name:'Beeswax Candle',  icon:'🐝', cost:200,    req:{candle:1},  effect:'bldgMult',   bldg:'candle', val:2,  desc:'Double candle output' },
+  { id:'oil_lamp',      name:'Oil Lamp',         icon:'🪔', cost:1500,   req:{candle:5},  effect:'bldgMult',   bldg:'candle', val:2,  desc:'×2 candles again' },
+  // Scroll
+  { id:'silk_scroll',   name:'Silk Scroll',      icon:'🌸', cost:1000,   req:{scroll:1},  effect:'bldgMult',   bldg:'scroll', val:2,  desc:'×2 scroll output' },
+  { id:'rune_ink',      name:'Rune Ink',          icon:'🪄', cost:8000,   req:{scroll:5},  effect:'bldgMult',   bldg:'scroll', val:2,  desc:'×2 scroll output' },
+  // Book
+  { id:'leather_bind',  name:'Leather Binding',  icon:'📖', cost:5000,   req:{book:1},    effect:'bldgMult',   bldg:'book', val:2,    desc:'×2 tome output' },
+  { id:'golden_pages',  name:'Gilded Pages',     icon:'📋', cost:50000,  req:{book:5},    effect:'bldgMult',   bldg:'book', val:3,    desc:'×3 tome output' },
+  // Library
+  { id:'card_catalog',  name:'Card Catalog',     icon:'🗂️', cost:25000,  req:{library:1}, effect:'bldgMult',   bldg:'library', val:2, desc:'×2 library output' },
+  { id:'silent_rule',   name:'Silent Rule',      icon:'🤫', cost:200000, req:{library:5}, effect:'bldgMult',   bldg:'library', val:2, desc:'×2 library output' },
+  // School
+  { id:'chalkboard',    name:'Chalkboard',       icon:'🪣', cost:100000, req:{school:1},  effect:'bldgMult',   bldg:'school', val:2,  desc:'×2 school output' },
+  { id:'curriculum',    name:'Curriculum',       icon:'📐', cost:1e6,    req:{school:5},  effect:'bldgMult',   bldg:'school', val:3,  desc:'×3 school output' },
+  // Global
+  { id:'coffee',        name:'Coffee',            icon:'☕', cost:10000,  req:null,        effect:'globalMult', val:1.1, desc:'+10% all production' },
+  { id:'tea',           name:'Herbal Tea',        icon:'🍵', cost:100000, req:null,        effect:'globalMult', val:1.15,desc:'+15% all production' },
+  { id:'alchemy',       name:'Alchemy',           icon:'⚗️', cost:500000, req:null,        effect:'globalMult', val:1.25,desc:'+25% all production' },
+  { id:'meditation',    name:'Meditation',        icon:'🧘', cost:5e6,    req:null,        effect:'globalMult', val:1.5, desc:'+50% all production' },
+  // Idle bonus
+  { id:'autodidact',    name:'Autodidact',        icon:'🔄', cost:50000,  req:null,        effect:'idleBonus',  val:1,   desc:'Clicks count as passive income too' },
+];
+
+const RESEARCH = [
+  { id:'r_candle2',  name:'Night Reading',       cost:150,    req:null,         desc:'Candles produce +1 KPS base',        effect:'bldgBase', bldg:'candle', val:1 },
+  { id:'r_scroll2',  name:'Ancient Scripts',     cost:1200,   req:{r_candle2:true}, desc:'Scrolls +3 KPS base',            effect:'bldgBase', bldg:'scroll', val:3 },
+  { id:'r_crit',     name:'Critical Insight',    cost:800,    req:null,         desc:'10% chance of ×10 clicks',           effect:'crit',     val:0.1 },
+  { id:'r_crit2',    name:'Keen Perception',     cost:8000,   req:{r_crit:true},desc:'Critical chance → 20%',              effect:'crit',     val:0.2 },
+  { id:'r_offline',  name:'Lucid Dreaming',      cost:5000,   req:null,         desc:'Offline progress at 50% rate',       effect:'offline',  val:0.5 },
+  { id:'r_offline2', name:'Dream Academy',       cost:50000,  req:{r_offline:true}, desc:'Offline progress at 75%',        effect:'offline',  val:0.75 },
+  { id:'r_frenzy',   name:'Mana Reservoir',      cost:3000,   req:null,         desc:'Unlock the Frenzy ability',          effect:'frenzy',   val:1 },
+  { id:'r_combo',    name:'Chain Reaction',       cost:20000,  req:null,         desc:'Rapid clicking builds a combo (up to ×5)', effect:'combo', val:1 },
+  { id:'r_prestige', name:'Ascension Lore',       cost:500,    req:null,         desc:'Prestige threshold lowered to 5,000', effect:'prestige_req', val:5000 },
+  { id:'r_library2', name:'Classification',       cost:40000,  req:{library:5},  desc:'Libraries grant +10 KPS base',       effect:'bldgBase', bldg:'library', val:10 },
+  { id:'r_synergy',  name:'Synergy',              cost:200000, req:null,         desc:'Each unique building type adds +2% global mult', effect:'synergy', val:1 },
+];
+
+const ACHIEVEMENTS = [
+  { id:'first_click',  icon:'👆', name:'First Step',       desc:'Study for the first time',           check:s=>s.totalClicks>=1 },
+  { id:'scholar',      icon:'📖', name:'Scholar',           desc:'Accumulate 100 knowledge',            check:s=>s.totalK>=100 },
+  { id:'bookworm',     icon:'🐛', name:'Bookworm',          desc:'Own 10 Tomes',                        check:s=>(s.bldg.book||0)>=10 },
+  { id:'librarian',    icon:'🏛️', name:'Librarian',         desc:'Own 5 Libraries',                     check:s=>(s.bldg.library||0)>=5 },
+  { id:'nocturnal',    icon:'🦉', name:'Nocturnal',         desc:'Have 20 Candles',                     check:s=>(s.bldg.candle||0)>=20 },
+  { id:'historian',    icon:'📜', name:'Historian',         desc:'Own 10 Scrolls',                      check:s=>(s.bldg.scroll||0)>=10 },
+  { id:'prestigious',  icon:'🌟', name:'Prestigious',        desc:'Prestige for the first time',         check:s=>s.prestige>=1 },
+  { id:'ascended',     icon:'🔥', name:'Ascended',           desc:'Prestige 3 times',                    check:s=>s.ascensions>=3 },
+  { id:'millionaire',  icon:'💰', name:'Millionaire',        desc:'Earn 1,000,000 total knowledge',      check:s=>s.totalK>=1e6 },
+  { id:'billionaire',  icon:'👑', name:'Billionaire',        desc:'Earn 1,000,000,000 total knowledge',  check:s=>s.totalK>=1e9 },
+  { id:'clicker',      icon:'🖱️', name:'Clicker',            desc:'Click 100 times',                     check:s=>s.totalClicks>=100 },
+  { id:'frenzied',     icon:'⚡', name:'Frenzied',           desc:'Activate Frenzy',                     check:s=>s.frenzyCount>=1 },
+  { id:'researcher',   icon:'🔬', name:'Researcher',         desc:'Complete 5 research nodes',           check:s=>Object.values(s.research).filter(Boolean).length>=5 },
+  { id:'all_research', icon:'🎯', name:'Omniscient',         desc:'Complete all research',               check:s=>RESEARCH.every(r=>s.research[r.id]) },
+  { id:'combo_master', icon:'💥', name:'Combo Master',       desc:'Reach a ×5 click combo',              check:s=>s.maxCombo>=5 },
+  { id:'high_ps',      icon:'⏱️', name:'Speed of Thought',   desc:'Reach 1,000 KPS',                     check:s=>calcKPS(s)>=1000 },
+  { id:'night_owl',    icon:'🌙', name:'Night Owl',           desc:'Gain offline progress',               check:s=>s.offlineGained>0 },
+];
+
+const MILESTONES = [
+  { name:'First Knowledge',  desc:'You have begun.',          check:s=>s.totalK>=1 },
+  { name:'100 Knowledge',    desc:'The basics understood.',   check:s=>s.totalK>=100 },
+  { name:'1K Knowledge',     desc:'A solid foundation.',      check:s=>s.totalK>=1000 },
+  { name:'10K Knowledge',    desc:'Ready to ascend.',         check:s=>s.totalK>=10000 },
+  { name:'100K Knowledge',   desc:'A true scholar.',          check:s=>s.totalK>=100000 },
+  { name:'1M Knowledge',     desc:'The library is yours.',    check:s=>s.totalK>=1e6 },
+  { name:'1B Knowledge',     desc:'A legend of learning.',    check:s=>s.totalK>=1e9 },
+  { name:'First Prestige',   desc:'Transcendence achieved.',  check:s=>s.ascensions>=1 },
+];
+
+const PRESTIGE_UPGRADES = [
+  { id:'pu_click',  name:'Enlightened Touch',   cost:1, desc:'Click power ×3 permanently', effect:'clickMult', val:3 },
+  { id:'pu_ps',     name:'Eternal Scholar',      cost:2, desc:'+20% KPS permanently',       effect:'globalMult', val:1.2 },
+  { id:'pu_start',  name:'Head Start',           cost:1, desc:'Start each run with 50 Knowledge', effect:'startK', val:50 },
+  { id:'pu_offline',name:'Dream Weaver',          cost:2, desc:'Full offline progress',      effect:'offline', val:1.0 },
+  { id:'pu_frenzy', name:'Frenzy Master',         cost:3, desc:'Frenzy lasts 60s & gives ×20', effect:'frenzy2', val:1 },
+];
+
+// Daily challenges (cycle by day)
+const CHALLENGES = [
+  { name:'Speed Scholar',    desc:'Earn 10,000 knowledge in a single session',  goal:s=>s.totalK, target:10000, reward:'☕ Coffee upgrade free!' },
+  { name:'Idle Master',      desc:'Reach 50 KPS',                               goal:s=>calcKPS(s), target:50, reward:'+1 Prestige Point' },
+  { name:'Click Maniac',     desc:'Click 200 times',                            goal:s=>s.totalClicks, target:200, reward:'Frenzy unlocked free!' },
+  { name:'Collector',        desc:'Own 20 total buildings',                     goal:s=>totalBuildings(s), target:20, reward:'+10% KPS for session' },
+];
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+const DEFAULT_STATE = () => ({
+  k: 0, totalK: 0, prestige: 0, ascensions: 0,
+  bldg: {}, upgrades: {}, research: {},
+  prestigeUpgrades: {},
+  totalClicks: 0, frenzyCount: 0, maxCombo: 0,
+  offlineGained: 0,
+  last: Date.now(), achievementsEarned: {},
+  challengeDay: -1, challengeProgress: 0, challengeDone: false,
+});
+
+let s = (() => {
+  try { return JSON.parse(localStorage.getItem('kc2_save') || 'null') || DEFAULT_STATE(); }
+  catch(e) { return DEFAULT_STATE(); }
+})();
+
+// ═══════════════════════════════════════════
+//  CALCULATIONS
+// ═══════════════════════════════════════════
+function calcKPS(st) {
+  let kps = 0;
+  BUILDINGS.forEach(b => {
+    const count = st.bldg[b.id] || 0;
+    if (!count) return;
+    let base = b.kps;
+    // Research base additions
+    RESEARCH.filter(r => r.effect === 'bldgBase' && r.bldg === b.id && st.research[r.id])
+            .forEach(r => base += r.val);
+    // Upgrade multipliers for this building
+    let mult = 1;
+    UPGRADES.filter(u => u.effect === 'bldgMult' && u.bldg === b.id && st.upgrades[u.id])
+            .forEach(u => mult *= u.val);
+    kps += count * base * mult;
+  });
+
+  let globalMult = 1;
+  // Prestige bonus
+  globalMult *= 1 + (st.prestige || 0) * 0.05;
+  // Upgrade global mults
+  UPGRADES.filter(u => u.effect === 'globalMult' && st.upgrades[u.id])
+          .forEach(u => globalMult *= u.val);
+  // Prestige upgrade global mults
+  PRESTIGE_UPGRADES.filter(u => u.effect === 'globalMult' && st.prestigeUpgrades[u.id])
+                   .forEach(u => globalMult *= u.val);
+  // Research synergy
+  if (st.research.r_synergy) {
+    const unique = BUILDINGS.filter(b => (st.bldg[b.id] || 0) > 0).length;
+    globalMult *= 1 + unique * 0.02;
+  }
+  return kps * globalMult;
+}
+
+function calcClickPower(st) {
+  let power = 1;
+  UPGRADES.filter(u => u.effect === 'clickMult' && st.upgrades[u.id])
+          .forEach(u => power *= u.val);
+  PRESTIGE_UPGRADES.filter(u => u.effect === 'clickMult' && st.prestigeUpgrades[u.id])
+                   .forEach(u => power *= u.val);
+  // Include 1% of KPS
+  power += calcKPS(st) * 0.01;
+  return Math.max(1, Math.floor(power));
+}
+
+function globalMult(st) {
+  let g = 1 + (st.prestige || 0) * 0.05;
+  UPGRADES.filter(u => u.effect === 'globalMult' && st.upgrades[u.id]).forEach(u => g *= u.val);
+  PRESTIGE_UPGRADES.filter(u => u.effect === 'globalMult' && st.prestigeUpgrades[u.id]).forEach(u => g *= u.val);
+  return g;
+}
+
+function totalBuildings(st) { return Object.values(st.bldg).reduce((a,b)=>a+b,0); }
+
+function buildingCost(id, count) {
+  const b = BUILDINGS.find(x=>x.id===id);
+  return Math.floor(b.base * Math.pow(1.15, count));
+}
+
+function prestigeReward(st) { return Math.floor(Math.sqrt(st.totalK / 1000)); }
+function prestigeReq(st) { return st.research && st.research.r_prestige ? 5000 : 10000; }
+
+// ═══════════════════════════════════════════
+//  COMBO SYSTEM
+// ═══════════════════════════════════════════
+let combo = 0, comboTimer = null;
+function getCombo() {
+  if (!s.research.r_combo) return 1;
+  return Math.min(5, 1 + Math.floor(combo / 5));
+}
+function bumpCombo() {
+  if (!s.research.r_combo) return;
+  combo = Math.min(25, combo + 1);
+  s.maxCombo = Math.max(s.maxCombo, getCombo());
+  clearTimeout(comboTimer);
+  comboTimer = setTimeout(() => { combo = 0; }, 2000);
+}
+
+// ═══════════════════════════════════════════
+//  FRENZY
+// ═══════════════════════════════════════════
+let frenzyActive = false, frenzyEnd = 0;
+function activateFrenzy() {
+  if (!s.research.r_frenzy) { showToast('Research "Mana Reservoir" first!'); return; }
+  if (frenzyActive) { showToast('Frenzy already active!'); return; }
+  frenzyActive = true;
+  s.frenzyCount++;
+  const dur = s.prestigeUpgrades.pu_frenzy ? 60000 : 30000;
+  frenzyEnd = Date.now() + dur;
+  showToast('⚡ FRENZY ACTIVATED!');
+  checkAchievements();
+  setTimeout(() => { frenzyActive = false; }, dur);
+}
+
+// ═══════════════════════════════════════════
+//  ACTIONS
+// ═══════════════════════════════════════════
+function doStudy(e) {
+  let power = calcClickPower(s);
+  // Frenzy
+  if (frenzyActive) power *= (s.prestigeUpgrades.pu_frenzy ? 20 : 10);
+  // Crit
+  const critChance = s.research.r_crit2 ? 0.2 : s.research.r_crit ? 0.1 : 0;
+  let crit = false;
+  if (critChance && Math.random() < critChance) { power *= 10; crit = true; }
+  // Combo
+  power *= getCombo();
+  bumpCombo();
+  // Idle bonus
+  if (s.upgrades.autodidact) s.k += calcKPS(s) * 0.1;
+  s.k += power;
+  s.totalK += power;
+  s.totalClicks++;
+  showFloatie(e, '+' + fmtNum(Math.floor(power)) + (crit ? ' CRIT!' : ''));
+  update();
+}
+
+function buyBuilding(id) {
+  const count = s.bldg[id] || 0;
+  const cost = buildingCost(id, count);
+  if (s.k < cost) return;
+  s.k -= cost;
+  s.bldg[id] = count + 1;
+  update();
+}
+
+function buyMax(which) {
+  const id = which === 'book' ? 'book' : 'library';
+  let bought = 0;
+  while (true) {
+    const count = s.bldg[id] || 0;
+    const cost = buildingCost(id, count);
+    if (s.k < cost) break;
+    s.k -= cost;
+    s.bldg[id] = count + 1;
+    bought++;
+    if (bought > 1000) break;
+  }
+  if (bought) showToast(`Bought ${bought} ${BUILDINGS.find(b=>b.id===id).name}(s)!`);
+  update();
+}
+
+function buyUpgrade(id) {
+  const upg = UPGRADES.find(u=>u.id===id);
+  if (!upg || s.upgrades[id] || s.k < upg.cost) return;
+  s.k -= upg.cost;
+  s.upgrades[id] = true;
+  showToast(`Unlocked: ${upg.name}!`);
+  update();
+}
+
+function doResearch(id) {
+  const r = RESEARCH.find(x=>x.id===id);
+  if (!r || s.research[id]) return;
+  if (s.k < r.cost) { showToast('Not enough knowledge!'); return; }
+  // Check prereqs
+  if (r.req) {
+    for (const [k,v] of Object.entries(r.req)) {
+      if (typeof v === 'boolean' && !s.research[k]) { showToast('Prerequisites not met!'); return; }
+      if (typeof v === 'number' && (s.bldg[k]||0) < v) { showToast('Need more buildings!'); return; }
+    }
+  }
+  s.k -= r.cost;
+  s.research[id] = true;
+  showToast(`Researched: ${r.name}!`);
+  update();
+}
+
+function buyPrestigeUpgrade(id) {
+  const pu = PRESTIGE_UPGRADES.find(u=>u.id===id);
+  if (!pu || s.prestigeUpgrades[id] || s.prestige < pu.cost) return;
+  s.prestige -= pu.cost;
+  s.prestigeUpgrades[id] = true;
+  showToast(`✦ ${pu.name} unlocked!`);
+  update();
+}
+
+function doPrestige() {
+  if (s.k < prestigeReq(s)) { showToast(`Need ${fmtNum(prestigeReq(s))} knowledge to prestige!`); return; }
+  const gain = prestigeReward(s);
+  if (gain <= 0) { showToast('Gain more knowledge first!'); return; }
+  s.prestige += gain;
+  s.ascensions++;
+  const startK = s.prestigeUpgrades.pu_start ? 50 : 0;
+  s.k = startK; s.totalK = 0;
+  s.bldg = {}; s.upgrades = {}; s.research = {};
+  showToast(`✦ Ascended! +${gain} Prestige Points`);
+  update();
+}
+
+// ═══════════════════════════════════════════
+//  DAILY CHALLENGE
+// ═══════════════════════════════════════════
+function getChallenge() {
+  const day = Math.floor(Date.now() / 86400000);
+  return CHALLENGES[day % CHALLENGES.length];
+}
+function initChallenge() {
+  const day = Math.floor(Date.now() / 86400000);
+  if (s.challengeDay !== day) {
+    s.challengeDay = day;
+    s.challengeProgress = 0;
+    s.challengeDone = false;
+  }
+}
+
+// ═══════════════════════════════════════════
+//  ACHIEVEMENTS
+// ═══════════════════════════════════════════
+function checkAchievements() {
+  ACHIEVEMENTS.forEach(a => {
+    if (!s.achievementsEarned[a.id] && a.check(s)) {
+      s.achievementsEarned[a.id] = true;
+      showToast(`🏆 Achievement: ${a.name}!`);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════
+//  OFFLINE PROGRESS
+// ═══════════════════════════════════════════
+function applyOffline() {
+  const elapsed = Math.max(0, Math.min((Date.now() - (s.last||Date.now())) / 1000, 86400));
+  if (elapsed < 5) return;
+  let rate = 0;
+  if (s.prestigeUpgrades && s.prestigeUpgrades.pu_offline) rate = 1.0;
+  else if (s.research && s.research.r_offline2) rate = 0.75;
+  else if (s.research && s.research.r_offline) rate = 0.5;
+  else rate = 0.1;
+  const gained = elapsed * calcKPS(s) * rate;
+  if (gained > 0) {
+    s.k += gained;
+    s.totalK += gained;
+    s.offlineGained = (s.offlineGained||0) + gained;
+    const notice = document.getElementById('offline-notice');
+    notice.style.display = 'block';
+    notice.textContent = `⏰ Offline: +${fmtNum(Math.floor(gained))} knowledge (${Math.floor(elapsed/60)}m ${Math.floor(elapsed%60)}s)`;
+    setTimeout(() => { notice.style.display = 'none'; }, 8000);
+  }
+}
+
+// ═══════════════════════════════════════════
+//  RENDERING
+// ═══════════════════════════════════════════
+function renderBuildings() {
+  const el = document.getElementById('buildings-list');
+  el.innerHTML = BUILDINGS.map(b => {
+    const count = s.bldg[b.id] || 0;
+    const cost = buildingCost(b.id, count);
+    const canAfford = s.k >= cost;
+    const bps = (() => {
+      let base = b.kps;
+      RESEARCH.filter(r => r.effect==='bldgBase' && r.bldg===b.id && s.research[r.id]).forEach(r=>base+=r.val);
+      let mult = 1;
+      UPGRADES.filter(u => u.effect==='bldgMult' && u.bldg===b.id && s.upgrades[u.id]).forEach(u=>mult*=u.val);
+      return (base * mult * globalMult(s)).toFixed(1);
+    })();
+    return `<div class="building-row ${canAfford?'affordable':''}" onclick="buyBuilding('${b.id}')">
+      <div class="building-icon">${b.icon}</div>
+      <div class="building-info">
+        <div class="building-name">${b.name}</div>
+        <div class="building-desc">${b.desc}</div>
+        <div class="building-ps">+${bps} KPS each</div>
+      </div>
+      <div class="building-right">
+        <div class="building-cost">💡 ${fmtNum(cost)}</div>
+        <div class="building-owned">${count}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderUpgrades() {
+  const el = document.getElementById('upgrades-list');
+  el.innerHTML = UPGRADES.map(u => {
+    const bought = !!s.upgrades[u.id];
+    const canAfford = !bought && s.k >= u.cost;
+    let reqMet = true;
+    if (u.req) for (const [k,v] of Object.entries(u.req)) if ((s.bldg[k]||0) < v) reqMet = false;
+    const cls = bought ? 'bought' : !reqMet ? 'locked' : canAfford ? 'affordable' : '';
+    return `<div class="upgrade-btn ${cls}" onclick="${bought||!reqMet?'':''}" onmousedown="buyUpgrade('${u.id}')">
+      ${u.icon}
+      <span>${u.name}</span>
+      <div class="upgrade-tooltip"><strong>${u.name}</strong><br>${u.desc}<br>Cost: ${fmtNum(u.cost)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderResearch() {
+  const el = document.getElementById('research-list');
+  el.innerHTML = RESEARCH.map(r => {
+    const done = !!s.research[r.id];
+    let reqMet = true;
+    if (r.req) for (const [k,v] of Object.entries(r.req)) {
+      if (typeof v === 'boolean' && !s.research[k]) reqMet = false;
+      if (typeof v === 'number' && (s.bldg[k]||0) < v) reqMet = false;
+    }
+    const cls = done ? 'done' : !reqMet ? 'locked' : '';
+    return `<div class="research-item ${cls}" onclick="doResearch('${r.id}')">
+      <div class="research-name">${done?'✓ ':''}${r.name}</div>
+      <div class="research-desc">${r.desc}</div>
+      ${done ? '' : `<div class="research-cost">💡 ${fmtNum(r.cost)}</div>`}
+    </div>`;
+  }).join('');
+}
+
+function renderAchievements() {
+  const el = document.getElementById('ach-grid');
+  el.innerHTML = ACHIEVEMENTS.map(a => {
+    const earned = !!s.achievementsEarned[a.id];
+    return `<div class="ach-badge ${earned?'earned':'locked'}">
+      ${a.icon}
+      <div class="ach-tip"><strong>${a.name}</strong><br>${a.desc}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderMilestones() {
+  const el = document.getElementById('milestones-list');
+  el.innerHTML = MILESTONES.map(m => {
+    const done = m.check(s);
+    return `<div class="milestone ${done?'done':''}">
+      <div class="milestone-name">${done?'✓ ':'○ '}${m.name}</div>
+      <div class="milestone-desc">${m.desc}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderPrestigeUpgrades() {
+  const el = document.getElementById('prestige-upgrades');
+  el.innerHTML = PRESTIGE_UPGRADES.map(pu => {
+    const bought = !!s.prestigeUpgrades[pu.id];
+    const canAfford = !bought && s.prestige >= pu.cost;
+    return `<div style="display:inline-block;margin:4px">
+      <button class="btn ${bought?'':'primary'}" onclick="buyPrestigeUpgrade('${pu.id}')" ${bought?'disabled':''}>
+        ${bought?'✓ ':''}${pu.name} (${pu.cost}pp)<br><small style="font-size:9px">${pu.desc}</small>
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function renderChallenge() {
+  const ch = getChallenge();
+  const prog = ch.goal(s);
+  const pct = Math.min(100, (prog / ch.target) * 100).toFixed(1);
+  document.getElementById('ch-name').textContent = ch.name;
+  document.getElementById('ch-desc').textContent = ch.desc;
+  document.getElementById('ch-bar').style.width = pct + '%';
+  document.getElementById('ch-prog-txt').textContent = `${fmtNum(Math.min(prog, ch.target))} / ${fmtNum(ch.target)}`;
+  if (prog >= ch.target && !s.challengeDone) {
+    s.challengeDone = true;
+    showToast(`🎯 Challenge Complete! ${ch.reward}`);
+  }
+}
+
+function renderBuffs() {
+  const buffs = [];
+  if (frenzyActive) {
+    const rem = Math.max(0, Math.floor((frenzyEnd - Date.now()) / 1000));
+    buffs.push(`⚡ Frenzy (${rem}s) ×${s.prestigeUpgrades.pu_frenzy?'20':'10'}`);
+  }
+  if (s.research.r_combo && combo > 0) {
+    buffs.push(`💥 Combo ×${getCombo()} (${combo} hits)`);
+  }
+  document.getElementById('buff-list').innerHTML = buffs.length ? buffs.join('<br>') : 'None';
+}
+
+// ═══════════════════════════════════════════
+//  MASTER UPDATE
+// ═══════════════════════════════════════════
+let lastRender = 0;
+function update(force) {
+  const now = Date.now();
+  if (!force && now - lastRender < 100) return;
+  lastRender = now;
+
+  const kps = calcKPS(s);
+  const cp = calcClickPower(s);
+
+  document.getElementById('k-stat').textContent = fmtNum(Math.floor(s.k));
+  document.getElementById('total-stat').textContent = fmtNum(Math.floor(s.totalK));
+  document.getElementById('ps-stat').textContent = fmtNum(kps.toFixed(1));
+  document.getElementById('pc-stat').textContent = fmtNum(cp);
+  document.getElementById('p-stat').textContent = s.prestige;
+  document.getElementById('asc-stat').textContent = s.ascensions;
+  document.getElementById('mult-stat').textContent = '×' + globalMult(s).toFixed(2);
+  document.getElementById('click-gain-txt').textContent = fmtNum(cp);
+
+  const previewGain = prestigeReward(s);
+  document.getElementById('prestige-preview').textContent = previewGain;
+  document.getElementById('prestige-req-txt').textContent = `Requires ${fmtNum(prestigeReq(s))} knowledge to prestige`;
+
+  const pb = document.getElementById('prestige-btn');
+  pb.disabled = s.k < prestigeReq(s) || previewGain <= 0;
+
+  renderBuildings();
+  renderUpgrades();
+  renderResearch();
+  renderAchievements();
+  renderMilestones();
+  renderPrestigeUpgrades();
+  renderChallenge();
+  renderBuffs();
+
+  checkAchievements();
+  save();
+}
+
+// ═══════════════════════════════════════════
+//  GAME LOOP
+// ═══════════════════════════════════════════
+let lastTick = Date.now();
+setInterval(() => {
+  const now = Date.now();
+  const dt = (now - lastTick) / 1000;
+  lastTick = now;
+  s.k += calcKPS(s) * dt;
+  s.totalK += calcKPS(s) * dt;
+  s.last = now;
+  update();
+}, 100);
+
+// ═══════════════════════════════════════════
+//  UI HELPERS
+// ═══════════════════════════════════════════
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  update(true);
+}
+
+function showFloatie(e, text) {
+  const f = document.createElement('div');
+  f.className = 'floatie';
+  f.textContent = text;
+  f.style.left = (e.clientX - 20) + 'px';
+  f.style.top = (e.clientY - 10) + 'px';
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 1000);
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function fmtNum(n) {
+  n = Number(n);
+  if (n >= 1e15) return (n/1e15).toFixed(2) + 'Qa';
+  if (n >= 1e12) return (n/1e12).toFixed(2) + 'T';
+  if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+  if (n >= 1e4) return (n/1e3).toFixed(1) + 'K';
+  return Math.floor(n).toLocaleString();
+}
+
+// ═══════════════════════════════════════════
+//  SAVE / LOAD
+// ═══════════════════════════════════════════
+function save() {
+  localStorage.setItem('kc2_save', JSON.stringify(s));
+}
+
+function exportSave() {
+  const encoded = btoa(JSON.stringify(s));
+  const ta = document.createElement('textarea');
+  ta.value = encoded;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  ta.remove();
+  showToast('Save copied to clipboard!');
+}
+
+function importSave() {
+  const code = prompt('Paste your save code:');
+  if (!code) return;
+  try {
+    s = JSON.parse(atob(code));
+    showToast('Save imported!');
+    update(true);
+  } catch(e) { showToast('Invalid save code!'); }
+}
+
+function hardReset() {
+  if (!confirm('Are you SURE? This will erase ALL progress!')) return;
+  localStorage.removeItem('kc2_save');
+  s = DEFAULT_STATE();
+  showToast('Save wiped. Fresh start!');
+  update(true);
+}
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+initChallenge();
+applyOffline();
+update(true);
+</script>
+</body>
+</html>
